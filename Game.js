@@ -10,7 +10,7 @@ class Game {
       this.score = 0;
       this.gameStart = false;
       this.gameOver = false;
-      this.music = new Audio("./dist/assets/gamemusic.mp3");
+      this.music = new Audio("./assets/gamemusic.mp3");
       this.ball = new Ball(
         canvas.width / 2,
         canvas.height - 30,
@@ -50,7 +50,6 @@ class Game {
     };
 
     keyUpHandler() {
-      console.log("STARTED2")
       this.handleGameStart();
     }
 

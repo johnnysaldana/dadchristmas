@@ -20,6 +20,7 @@ class Game {
       this.music.play();
       this.music.loop = true;
       this.music.volume = 0.2;
+      this.opened = true;
     }
 
     keyDownHandler(e) {
@@ -53,7 +54,10 @@ class Game {
     draw() {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       this.drawBackground(this.ctx);
-      this.drawSnoop(this.ctx);
+      if (this.opened) {
+        this.drawSnoop(this.ctx);
+
+      }
     };
   };
 

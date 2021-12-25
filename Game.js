@@ -151,7 +151,7 @@ class Game {
       }
 
       if (this.ballMoving && this.dx <= 0 && this.dy == 0) {
-        if (this.score > 930) {
+        if (this.score > 900) {
           this.gameWin = true;
         }
       }

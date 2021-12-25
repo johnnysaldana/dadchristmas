@@ -1,8 +1,3 @@
-import Ball from "./Ball.js";
-import Brick from "./Brick.js";
-import Display from "./Display.js";
-import Paddle from "./Paddle.js";
-
 class Game {
     constructor(canvas, ctx) {
       this.canvas = canvas;
@@ -11,47 +6,37 @@ class Game {
       this.gameStart = false;
       this.gameOver = false;
       this.music = new Audio("./assets/gamemusic.mp3");
-      this.ball = new Ball(
-        canvas.width / 2,
-        canvas.height - 30,
-        10,
-        10,
-        "#0095DD",
-        2,
-        -2
-      );
+      //this.display = new Display(0);
+      //this.club = new Club(0);
+      this.dx = 0;
+      this.dy = 0;
+      this.x = 70;
+      this.y = 270;
+      this.w =0;
+      this.dw = 0;
+      this.displacement = 2/100;
+      this.background = new Image();
+      this.background.src = "/assets/background.jpeg";
+      this.golfclub = new Image();
+      this.golfclub.src = "/assets/golfclub.png";
+      this.golfer = new Image();
+      this.golfer.src = "/assets/golfer.png";
+      this.ball = new Image();
+      this.ball.src = "/assets/ball.png";
+      this.prize1 = new Image();
+      this.prize1.src = "/assets/prize1.png";
+      this.prize2 = new Image();
+      this.prize2.src = "/assets/prize2.png";
+      this.trophy = new Image();
+      this.trophy.src = "/assets/trophy.png";
+      this.maxClubSwing = 1;
+      this.ballMoving = false;
+      this.clubMoving = true;
       
-      this.paddle = new Paddle(
-        (canvas.width - 10) / 2,
-        canvas.height - 10,
-        75,
-        10,
-        "#0095DD"
-      );
-      this.display = new Display(0);
-      this.brickRowCount = 5;
-      this.brickColumnCount = 5;
-      this.bricks = [];
-      this.brickWidth = 50;
-      this.brickHeight = 20;
-      this.brickPadding = 20;
-      this.brickOffsetTop = 30;
-      this.brickOffsetLeft = 50;
-
-      for (let c = 0; c < this.brickColumnCount; c++) {
-        for (let r = 0; r < this.brickRowCount; r++) {
-          let brickX = c * (this.brickWidth + this.brickPadding) + this.brickOffsetLeft;
-          let brickY = r * (this.brickHeight + this.brickPadding) + this.brickOffsetTop;
-          this.bricks.push(new Brick(brickX, brickY, this.brickWidth, this.brickHeight, "#0095DD"));
-        }
-      }
       document.addEventListener("keyup", this.keyUpHandler.bind(this));
-      console.log("finished init")
+      document.addEventListener("keydown", this.keyDownHandler.bind(this));
+      document.addEventListener("keyup", this.keyUpHandler.bind(this));
     };
-
-    keyUpHandler() {
-      this.handleGameStart();
-    }
 
     updateBall() {
       this.ball.draw(this.ctx);
@@ -67,9 +52,11 @@ class Game {
     }
 
     handleGameStart() {
-      this.gameStart = true;
-      this.music.play();
-      this.music.loop = true;
+      if (!this.gameStart) {
+        this.gameStart = true;
+        this.music.play();
+        this.music.loop = true;
+      }
     }
 
     handleGameLose() {
@@ -102,29 +89,147 @@ class Game {
       this.display.draw(this.ctx);
     }
 
-    checkIntersections() {
-      this.ball.colides(this.paddle);
+    updateClub() {
+      this.club.draw(this.ctx);
+    }
 
-      this.bricks.forEach((brick) => {
-        brick.draw(this.ctx);
-        if (brick.colides(this.ball)) {
-          this.score++;
+
+    keyDownHandler(e) {
+      if ((e.key === "Right" || e.key === "ArrowRight") && this.clubMoving) {
+        if (this.w < -0.5) {
+          this.dw = 0;
+        } else {
+          this.dw = -1*this.displacement*10;
         }
-      });
-      if (this.score == this.brickRowCount * this.brickColumnCount) {
-        this.handleGameWin()
+      } else if ((e.key === "Left" || e.key === "ArrowLeft") && this.clubMoving) {
+        if (this.w > 2.3) {
+          this.dw = 0;
+        } else {
+          this.dw = this.displacement;
+        }
+      } else if ((e.key === "r" || e.key === "r")) {
+        this.reset(this.ctx);
       }
     }
   
-    draw() {
-      console.log(this.gameStart);
-      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      this.updateDisplay();
-      if (this.gameStart) {
-        this.updateBall();
-        this.updatePaddle();
+    keyUpHandler(e) {
+      if (e.key === "Right" || e.key === "ArrowRight") {
+        this.dw = 0;
+      } else if (e.key === "Left" || e.key === "ArrowLeft") {
+        this.dw = 0;
       }
-      this.checkIntersections();
+    }
+    drawBackground(ctx) {
+      ctx.save();
+      ctx.drawImage(this.background, -50, 0, 1200, 350);
+      ctx.restore();
+    }
+    drawGolfer(ctx) {
+      ctx.save();
+      ctx.drawImage(this.golfer, 25, 150, 70, 140);
+      ctx.restore();
+    }
+
+    drawClub(ctx) {
+      ctx.save();
+      this.w += this.dw;
+      ctx.translate(67, 225);
+      if (this.w < -0.5) {
+        this.dw = 0;
+      }
+      if (this.w > this.maxClubSwing) {
+        this.maxClubSwing = this.w;
+      }
+      ctx.rotate(this.w * Math.PI / 3);
+      ctx.drawImage(this.golfclub, -35, 0, 60, 70);
+      ctx.restore();
+    }
+
+    drawBall(ctx) {
+      ctx.save();
+      if (!this.ballMoving && this.w < -0.4) {
+        if (this.maxClubSwing > 1.8) {
+          this.dy = -2 * (this.maxClubSwing*1.3 + 0.4);
+        } else {
+          this.dy = -2 * (this.maxClubSwing + 0.4);
+        }
+        if (this.maxClubSwing > 1.5) {
+          this.dx = (this.maxClubSwing*2 + 1);
+        } else {
+          this.dx = (this.maxClubSwing*1.3 + 1);
+        }
+        this.ballMoving = true;
+        this.clubMoving = false;
+      }
+      if (this.ballMoving) {
+        if (this.y < 275) {
+          this.dy += 0.05;
+        } else {
+          this.dy = 0;
+        }
+        if (this.dx > 0) {
+          if (this.dy === 0) {
+            this.dx -= 0.03;
+          } else {
+            this.dx -= 0.01;
+          }
+        } else {
+          this.dx = 0;
+        }
+        this.x += this.dx;
+        this.y += this.dy;
+      }
+
+      if (this.ballMoving && this.dx <= 0 && this.dy == 0) {
+        if (this.score > 500) {
+          console.log("You win");
+          this.gameWin = true;
+        }
+      }
+      ctx.drawImage(this.ball, this.x, this.y, 17, 17);
+      ctx.restore();
+    }
+
+    reset(ctx) {
+      this.ballMoving = false;
+      this.clubMoving = true;
+      this.dx = 0;
+      this.dy = 0;
+      this.x = 70;
+      this.y = 270;
+      this.w =0;
+      this.dw = 0;
+      this.maxClubSwing = 0;
+      this.score = 0;
+    }
+
+    drawDisplay(ctx) {
+      if (this.x > 80) {
+        this.score = Math.round(1000 - (Math.abs(this.x - 928)));
+      }
+      ctx.font = "16px Arial";
+      ctx.fillStyle = "#01435cf";
+      ctx.fillText("Score: " + this.score, 8, 20);
+    }
+
+    drawGameWin(ctx) {
+      ctx.save();
+      ctx.drawImage(this.trophy, 450, 50, 150, 150);
+      ctx.drawImage(this.prize1, 230, 220, 200, 100);
+      ctx.drawImage(this.prize2, 530, 220, 200, 100);
+      ctx.restore();
+    }
+  
+    draw() {
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.drawBackground(this.ctx);
+      this.drawGolfer(this.ctx);
+      this.drawClub(this.ctx);
+      this.drawBall(this.ctx);
+      this.drawDisplay(this.ctx);
+      if (this.gameWin) {
+        this.drawGameWin(this.ctx);
+      }
     };
   };
 

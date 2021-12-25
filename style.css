@@ -7,6 +7,7 @@ canvas {
   position:absolute; top:0px; left:0px;
   width:1260px;
   height:730px;  
+  background-color: "green";
 }
 
 @keyframes move-twink-back {

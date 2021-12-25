@@ -30,13 +30,11 @@ class Game {
       this.maxClubSwing = 1;
       this.ballMoving = false;
       this.clubMoving = true;
+      this.gameStart = false;
       
       document.addEventListener("keyup", this.keyUpHandler.bind(this));
       document.addEventListener("keydown", this.keyDownHandler.bind(this));
       document.addEventListener("keyup", this.keyUpHandler.bind(this));
-      this.music.play();
-      this.music.loop = true;
-      this.music.volume = 0.2;
     };
 
     updateBall() {
@@ -55,8 +53,18 @@ class Game {
       this.club.draw(this.ctx);
     }
 
+    handleGameStart() {
+      this.music.play();
+      this.music.loop = true;
+      this.music.volume = 0.2;
+    }
+
 
     keyDownHandler(e) {
+      if (!this.gameStart) {
+        this.gameStart = true;
+        this.handleGameStart();
+      }
       if ((e.key === "Right" || e.key === "ArrowRight") && this.clubMoving) {
         if (this.w < -0.5) {
           this.dw = 0;

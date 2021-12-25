@@ -6,8 +6,6 @@ class Game {
       this.gameStart = false;
       this.gameOver = false;
       this.music = new Audio("./assets/gamemusic.mp3");
-      //this.display = new Display(0);
-      //this.club = new Club(0);
       this.dx = 0;
       this.dy = 0;
       this.x = 70;
@@ -36,6 +34,9 @@ class Game {
       document.addEventListener("keyup", this.keyUpHandler.bind(this));
       document.addEventListener("keydown", this.keyDownHandler.bind(this));
       document.addEventListener("keyup", this.keyUpHandler.bind(this));
+      this.music.play();
+      this.music.loop = true;
+      this.music.volume = 0.2;
     };
 
     updateBall() {
@@ -44,45 +45,6 @@ class Game {
       if (!this.ball.bounce(this.canvas.width, this.canvas.height) && !this.gameOver) {
         this.handleGameLose()
       }
-    }
-
-    updatePaddle() {
-      this.paddle.draw(this.ctx);
-      this.paddle.move(this.canvas.width);
-    }
-
-    handleGameStart() {
-      if (!this.gameStart) {
-        this.gameStart = true;
-        this.music.play();
-        this.music.loop = true;
-      }
-    }
-
-    handleGameLose() {
-      this.gameOver = true;
-      this.music.pause();
-      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      this.bricks.forEach((brick) => {
-        brick.draw(this.ctx);
-        if (brick.colides(this.ball)) {
-          this.score++;
-        }
-      });
-      window.alert("Game over! Reload page");
-    }
-
-    handleGameWin() {
-      this.gameOver = true;
-      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      this.bricks.forEach((brick) => {
-        brick.draw(this.ctx);
-        if (brick.colides(this.ball)) {
-          this.score++;
-        }
-      });
-      let vid = document.getElementById("myVideo");
-      vid.play();
     }
 
     updateDisplay() {
@@ -181,8 +143,7 @@ class Game {
       }
 
       if (this.ballMoving && this.dx <= 0 && this.dy == 0) {
-        if (this.score > 500) {
-          console.log("You win");
+        if (this.score > 930) {
           this.gameWin = true;
         }
       }
@@ -210,6 +171,8 @@ class Game {
       ctx.font = "16px Arial";
       ctx.fillStyle = "#01435cf";
       ctx.fillText("Score: " + this.score, 8, 20);
+      ctx.font = "10px Arial";
+      ctx.fillText("Press 'r' to reset swing", 8, 340);
     }
 
     drawGameWin(ctx) {

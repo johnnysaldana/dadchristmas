@@ -48,6 +48,17 @@ class Game {
       ctx.drawImage(this.background, 0, 0, 1200, 500);
       ctx.restore();
     }
+
+    drawDisplay(ctx) {
+      if (this.x > 80) {
+        this.score = Math.round(1000 - (Math.abs(this.x - 928)));
+      }
+      ctx.font = "16px Arial";
+      ctx.fillStyle = "#01435cf";
+      ctx.font = "10px Arial";
+      ctx.fillText("Press 'o' to open", 210, 495);
+    }
+
     drawShell(ctx) {
       ctx.save();
       if (this.opened) {
@@ -63,6 +74,7 @@ class Game {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       this.drawBackground(this.ctx);
       this.drawShell(this.ctx);
+      this.drawDisplay(this.ctx);
     };
   };
 

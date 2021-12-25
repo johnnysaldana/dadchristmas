@@ -3,34 +3,26 @@ class Game {
       this.canvas = canvas;
       this.ctx = ctx;
       this.gameStart = false;
-      this.music = new Audio("./assets/gamemusic.mp3");
       this.displacement = 2/100;
       this.background = new Image();
-      this.background.src = "/assets/bwbackground.jpeg";
-      this.shellclosed = new Image();
-      this.shellclosed.src = "/assets/shellclosed.png";
-      this.shellopen = new Image();
-      this.shellopen.src = "/assets/shellopen.png";
-      this.reservation = new Image();
-      this.reservation.src = "/assets/reservation.png";
-
+      this.background.src = "/assets/stock.png";
+      this.snoop = new Image();
+      this.snoop.src = "/assets/snoop.gif";
       this.opened = false;
+      this.video = document.getElementById("myVideo");
+      
       
       document.addEventListener("keydown", this.keyDownHandler.bind(this));
       document.addEventListener("keyup", this.keyUpHandler.bind(this));
     };
 
-    handleGameStart() {
-      this.music.play();
-      this.music.loop = true;
-      this.music.volume = 0.2;
-    }
 
 
     keyDownHandler(e) {
       if (!this.gameStart) {
         this.gameStart = true;
-        this.handleGameStart();
+        this.video.muted = !this.video.muted;
+        this.video.play();
       }
       if (e.keyCode === "o" ) {
         this.opened = true;
@@ -45,36 +37,19 @@ class Game {
     }
     drawBackground(ctx) {
       ctx.save();
-      ctx.drawImage(this.background, 0, 0, 1200, 500);
+      ctx.drawImage(this.background, 0, 0, 1000, 400);
       ctx.restore();
     }
 
-    drawDisplay(ctx) {
-      if (this.x > 80) {
-        this.score = Math.round(1000 - (Math.abs(this.x - 928)));
-      }
-      ctx.font = "16px Arial";
-      ctx.fillStyle = "#01435cf";
-      ctx.font = "10px Arial";
-      ctx.fillText("Press 'o' to open", 210, 495);
-    }
-
-    drawShell(ctx) {
+    drawSnoop(ctx) {
       ctx.save();
-      if (this.opened) {
-        ctx.drawImage(this.shellopen, 200, 150, 400, 400);
-        ctx.drawImage(this.reservation, 250, 250, 300, 180);
-      } else {
-        ctx.drawImage(this.shellclosed, 200, 150, 400, 400);
-      }
+      ctx.drawImage(this.snoop, 50, 150, 200, 300);
       ctx.restore();
     }
-
     draw() {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       this.drawBackground(this.ctx);
-      this.drawShell(this.ctx);
-      this.drawDisplay(this.ctx);
+      this.drawSnoop(this.ctx);
     };
   };
 

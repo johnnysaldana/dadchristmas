@@ -10,6 +10,12 @@ canvas {
   background-color: "green";
 }
 
+video {
+  position:absolute; top:400px; left:400px;
+  width:400px;
+  height:250px;  
+}
+
 @keyframes move-twink-back {
   from {
     background-position: 0 0;
